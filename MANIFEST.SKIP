@@ -1,0 +1,14 @@
+bitcoin-cli.txt
+^.git
+~$
+# Makemaker generated files and dirs.
+^MANIFEST\.
+^Makefile$
+^blib/
+^MakeMaker-\d
+# Temp, old and emacs backup files.
+~$
+\.old$
+^#.*#$
+^\.#
+pm_to_blib
