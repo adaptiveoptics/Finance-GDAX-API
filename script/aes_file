@@ -1,0 +1,117 @@
+#!/usr/bin/env perl
+
+use v5.20;
+use warnings;
+use Crypt::CBC;
+use Crypt::Rijndael;
+use File::Slurp;
+use Getopt::Long;
+use IO::Prompter;
+
+=head1 NAME
+
+aes_file - Decrypt and encrypt an AES file
+
+=head1 SYNOPSIS
+
+  # Creates encrypted myfile.txt.aes
+  aes_file --encrypt myfile.txt
+
+  # Decrypts 'myfile.txt.aes'
+  aes_file --decrypt myfile.txt
+
+=head1 DESCRIPTION
+
+Simple utility to encrypt and decrypt files using AES, sending the
+output to STDOUT. This can be good for calling separate processes to
+work with files.
+
+The --encrypt or --decrypt parameter must be provided along with a
+file name. You will be prompted for a secret passphrase.
+
+The ".aes" filename extension is added to encrypted and decrypted
+filename by default, and this behavior can be suppressed by supplying
+--no-extension . Note that using --no-extension when encrypting will
+result in the original file being overwritten with its encrypted
+version.
+
+=head1 OPTIONS
+
+=head2 --encrypt <filename>
+
+Reads in <filename>, prompts for a secret passphrase, and then AES
+encrypts the file, writing it out to <filename>.aes
+
+=head2 --decrypt <filename>
+
+Reads in <filename>.aes and prompts for its secret passphrase, then
+decrypts the file with that passphrase, writing it out to STDOUT.
+
+Note that a bad passphrase will result in garbage rather than an
+error.
+
+=head2 --no-extension
+
+Specifying --no-extension will prevent '.aes' from being appended to
+the filename when reading and writing.
+
+Note that using this option when encryption will result in the
+original file being overwritten.
+
+=cut
+
+my $pad_char = 'R';
+
+my $decrypt;
+my $encrypt;
+my $no_extension;
+
+GetOptions('decrypt=s'    => \$decrypt,
+	   'encrypt=s'    => \$encrypt,
+	   'no-extension' => \$no_extension,
+    );
+
+die 'Cannot specify both --encrypt and --decrypt' if ($encrypt && $decrypt);
+die 'Must specify either --encrypt or --decrypt' unless ($encrypt || $decrypt);
+
+$| = 1; #disable output buffering
+
+if ($encrypt) {
+    my $file = read_file($encrypt);
+    my $key = get_key();
+    my $cipher = get_cipher($key);
+    write_file(get_filename($encrypt), $cipher->encrypt($file));
+    exit;
+}
+elsif ($decrypt) {
+    my $file = read_file(get_filename($decrypt));
+    my $key = prompt 'Enter secret key: ', -echo=>'';
+    my $cipher = get_cipher($key);
+    print $cipher->decrypt($file);
+    exit;
+}
+else {
+    die 'Strange options';
+}
+
+sub get_filename {
+    my $file = shift;
+    return  $no_extension ? $file : $file.'.aes';
+}
+
+sub get_cipher {
+    my $key = shift;
+    die 'Key must be provided to create cipher' unless $key;
+    return Crypt::CBC->new(-key => $key, -cipher => 'Rijndael');
+}
+
+sub get_key {
+    my $key1 = 1;
+    my $key2 = 2;
+    while ($key1 ne $key2) {
+	$key1 = prompt 'Enter secret key: ', -echo => '';
+	$key2 = prompt 'Verify secret key: ', -echo => '';
+    }
+    die 'No key entered' unless $key1;
+    return $key1;
+}

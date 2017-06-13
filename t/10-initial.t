@@ -32,6 +32,38 @@ ok(my $r = $req->send, 'send seems to work');
 is($$r{code}, 400, 'valid REST return code');
 ok($$r{content} =~ /^\{.+\}$/, 'valid REST content returned');
 
+my $tf = "/tmp/gdax_ext_test";
+my $key = "thisisthekey";
+my $sec = "ThisISTHeSEcret";
+my $pas = "MyverYSEcReTPasSPHraSe";
+open TF, ">", $tf;
+print TF "key:$key\n";
+print TF "secret:$sec\n";
+print TF "\n";
+print TF "passphrase:$pas\n";
+close TF;
+$req->external_secret($tf);
+unlink $tf;
+is($req->key, $key, 'external_secret key read ok');
+is($req->secret, $sec, 'external_secret secret read ok');
+is($req->passphrase, $pas, 'external_secret passphrase read ok');
+
+open TF, ">", $tf;
+print TF <<"EOB";
+#!/usr/bin/env perl
+print "key:$key\n";
+print "secret:$sec\n";
+print "# This is a comment\n";
+print "passphrase:$pas\n";
+EOB
+close TF;
+chmod 0744, $tf;
+$req->external_secret($tf, 1);
+unlink $tf;
+is($req->key, $key, 'external_secret forked key read ok');
+is($req->secret, $sec, 'external_secret forked secret read ok');
+is($req->passphrase, $pas, 'external_secret forked passphrase read ok');
+
 done_testing();
 
 sub is_base64 {

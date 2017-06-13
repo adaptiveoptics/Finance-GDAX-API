@@ -32,17 +32,11 @@
       },
       "runtime" : {
          "requires" : {
-            "Config::Tiny" : "2.23",
-            "DBD::Pg" : "v3.4.2",
-            "DBIx::Class" : "0.082810",
-            "DBIx::Class::Schema::Loader" : "0.07042",
-            "DateTime::Format::Pg" : "0.16010",
+            "Digest::SHA" : "5.93",
             "ExtUtils::MakeMaker" : "6.17",
             "LWP::Protocol::https" : "6.06",
             "Moose" : "2.12",
-            "MooseX::Singleton" : "0.29",
             "REST::Client" : "273",
-            "Try::Tiny" : "0.22",
             "namespace::autoclean" : "0.20"
          }
       },

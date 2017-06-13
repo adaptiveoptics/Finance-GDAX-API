@@ -36,11 +36,11 @@ https://
 
 has 'production' => (is  => 'rw',
 		     isa => 'Str',
-		     default => 'https://api.gdax.com/',
+		     default => 'https://api.gdax.com',
     );
 has 'testing' => (is  => 'rw',
 		  isa => 'Str',
-		  default => 'https://api-public.sandbox.gdax.com/',
+		  default => 'https://api-public.sandbox.gdax.com',
     );
 has 'debug' => (is  => 'rw',
 		isa => 'Bool',
@@ -63,6 +63,7 @@ Returns a string of the assembled URL
 sub get {
     my $self = shift;
     my $url = join '/', @{$self->_sections};
+    $url = '/'.$url;
     if ($self->debug) {
 	return $self->testing.$url;
     } else {

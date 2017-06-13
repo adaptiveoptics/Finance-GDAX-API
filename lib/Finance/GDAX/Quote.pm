@@ -15,7 +15,7 @@ Finance::GDAX::Quote - Get a quote from the GDAX
 =head1 SYNOPSIS
 
   use Finanace::GDAX::Quote;
-  my $quote = Finance::GDAX::Quote->new({product => 'BTC-USD'})->get;
+  my $quote = Finance::GDAX::Quote->new(product => 'BTC-USD')->get;
   say $$quote{price};
   say $$quote{bid};
   say $$quote{ask};
@@ -52,12 +52,12 @@ Quote is returned as a hashref with the (currently) following keys:
 
 =head1 ATTRIBUTES
 
-=head2 C<debug>
+=head2 C<debug> (default: 1)
 
 Bool that sets debug mode (will use sandbox). Defaults to true
 (1). Debug mode does not seem to give real quotes.
 
-=head2 C<product>
+=head2 C<product> (default: "BTC-USD")
 
 The product code for which to return the quote.
 
