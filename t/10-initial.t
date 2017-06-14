@@ -5,12 +5,12 @@ use lib 'lib';
 
 BEGIN {
     use_ok('JSON');
-    use_ok('Finance::GDAX::Quote');
-    use_ok('Finance::GDAX::Request');
+    use_ok('Finance::GDAX::API::Quote');
+    use_ok('Finance::GDAX::API::Request');
 }
 
 my $quote = Finance::GDAX::Quote->new;
-isa_ok($quote, 'Finance::GDAX::Quote');
+isa_ok($quote, 'Finance::GDAX::API::Quote');
 
 my $q = $quote->get;
 is(ref($q), 'HASH', 'quote->get returns a hashref');

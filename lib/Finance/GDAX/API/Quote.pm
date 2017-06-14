@@ -1,21 +1,21 @@
-package Finance::GDAX::Quote;
+package Finance::GDAX::API::Quote;
 use v5.20;
 use warnings;
 use Moose;
 use JSON;
 use REST::Client;
-use Finance::GDAX::URL;
+use Finance::GDAX::API::URL;
 use namespace::autoclean;
 
 
 =head1 NAME
 
-Finance::GDAX::Quote - Get a quote from the GDAX
+Finance::GDAX::API::Quote - Get a quote from the GDAX
 
 =head1 SYNOPSIS
 
-  use Finanace::GDAX::Quote;
-  my $quote = Finance::GDAX::Quote->new(product => 'BTC-USD')->get;
+  use Finanace::GDAX::API::Quote;
+  my $quote = Finance::GDAX::API::Quote->new(product => 'BTC-USD')->get;
   say $$quote{price};
   say $$quote{bid};
   say $$quote{ask};
@@ -82,7 +82,7 @@ Returns a quote for the desired product.
 
 sub get {
     my $self = shift;
-    my $url  = Finance::GDAX::URL->new;
+    my $url  = Finance::GDAX::API::URL->new;
     $url->debug($self->debug);
     $url->add('products');
     $url->add($self->product);

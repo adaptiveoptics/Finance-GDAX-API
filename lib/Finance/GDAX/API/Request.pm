@@ -1,4 +1,4 @@
-package Finance::GDAX::Request;
+package Finance::GDAX::API::Request;
 use v5.20;
 use warnings;
 use JSON;
@@ -6,18 +6,20 @@ use Moose;
 use REST::Client;
 use MIME::Base64;
 use Digest::SHA qw(hmac_sha256_base64);
-use Finance::GDAX::URL;
+use Finance::GDAX::API::URL;
 use namespace::autoclean;
 
 =head1 NAME
 
-Finance::GDAX::Request - Build and sign a GDAX REST request
+Finance::GDAX::API::Request - Build and sign a GDAX REST request
 
 =head1 SYNOPSIS
 
-  $req = Finance::GDAX::Request->new( key        => 'My API Key',
-                                      secret     => 'My API Secret Key',
-                                      passphrase => 'My API Passphrase');
+  $req = Finance::GDAX::API::Request->new(
+                        key        => 'My API Key',
+                        secret     => 'My API Secret Key',
+                        passphrase => 'My API Passphrase');
+
   $req->path('accounts');
   $account_list = $req->send;
 
@@ -134,7 +136,7 @@ representing the raw content sent from the server.
 sub send {
     my $self = shift;
     my $client = REST::Client->new;
-    my $url    = Finance::GDAX::URL->new(debug => $self->debug);
+    my $url    = Finance::GDAX::API::URL->new(debug => $self->debug);
     
     $url->add($self->path);
     
@@ -179,7 +181,7 @@ credentials, you can create a small callable program that will decrypt
 them and provide them, so that they never live on disk unencrypted,
 and never show up in process listings:
 
-  my $request = Finance::GDAX::Request->new;
+  my $request = Finance::GDAX::API::Request->new;
   $request->external_secret('my_decryptor', 1);
 
 This would assign the key, secret and passphrase attributes for you by
