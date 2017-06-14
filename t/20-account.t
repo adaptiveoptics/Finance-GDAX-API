@@ -8,9 +8,13 @@ BEGIN {
 }
 
 my $account = new_ok('Finance::GDAX::API::Account');
+can_ok($account, 'get_all');
+can_ok($account, 'get');
+can_ok($account, 'history');
+can_ok($account, 'holds');
  
  SKIP: {
-     skip 'GDAX_EXTERNAL_SECRET environment variable not set', 9
+     skip 'GDAX_EXTERNAL_SECRET environment variable not set', 8
 	 unless ($ENV{GDAX_EXTERNAL_SECRET} || $ENV{GDAX_EXTERNAL_SECRET_FORK});
      if ($ENV{GDAX_EXTERNAL_SECRET_FORK}) {
 	 warn "GDAX external_secret forking here - stdout will not be visible, if you have to enter in passphrases\n";
@@ -19,7 +23,7 @@ my $account = new_ok('Finance::GDAX::API::Account');
 	 ok($account->external_secret($ENV{GDAX_EXTERNAL_SECRET}), 'secret file');
      }
 
-     $account->debug(0); # Make sure this is set to 1 or you'll use live data
+     $account->debug(1); # Make sure this is set to 1 or you'll use live data
      
      ok(my $response = $account->get_all, 'get_all accounts list');
      my $rc = $account->response_code;
@@ -39,14 +43,7 @@ my $account = new_ok('Finance::GDAX::API::Account');
      ok(my $info = $account->get($account_id), 'get BTC account');
      ok(defined $$info{balance}, 'BTC account has balance defined');
 
-     foreach (@$response) {
-	 my $history = $account->history($$_{id});
-	 use Data::Dumper; warn Dumper($history)."\n";
-     }
-	 
-     #ok(my $history = $account->history($account_id), 'get BTC account history');
-     #warn $account->error if $account->error;
-     #ok(defined ${$$history[0]}{amount}, 'BTC account history has an amount');
+     ok(my $history = $account->history($account_id), 'get BTC account history');
 }
 
 done_testing();

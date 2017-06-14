@@ -9,16 +9,16 @@ BEGIN {
     use_ok('Finance::GDAX::API::Request');
 }
 
-my $quote = Finance::GDAX::Quote->new;
+my $quote = Finance::GDAX::API::Quote->new;
 isa_ok($quote, 'Finance::GDAX::API::Quote');
 
 my $q = $quote->get;
 is(ref($q), 'HASH', 'quote->get returns a hashref');
 ok($$q{price} > 1, 'quote->get returns a price looking like a number');
 
-my $req = Finance::GDAX::Request->new(key        => 'temp',
-				      secret     => 'temp',
-				      passphrase => 'temp');
+my $req = Finance::GDAX::API::Request->new(key        => 'temp',
+					   secret     => 'temp',
+					   passphrase => 'temp');
 ok($req->timestamp >= time, 'request timestamp appears sane');
 
 $req->path('test');
@@ -29,8 +29,8 @@ ok(is_base64($req->signature), 'request WITH body signature is base64');
 ok(${JSON->new->decode($req->body_json)}{string} eq "My test is a body test", 'body encoded to JSON');
 
 ok(my $r = $req->send, 'send seems to work');
-is($$r{code}, 400, 'valid REST return code');
-ok($$r{content} =~ /^\{.+\}$/, 'valid REST content returned');
+is($req->response_code, 400, 'valid REST error return code');
+like($req->error, '/invalid/i', 'looks like good error test returned');
 
 my $tf = "/tmp/gdax_ext_test";
 my $key = "thisisthekey";
