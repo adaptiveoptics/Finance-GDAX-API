@@ -89,12 +89,15 @@ has 'debug' => (is  => 'rw',
     );
 has 'key' => (is  => 'rw',
 	      isa => 'Str',
+	      default => $ENV{GDAX_API_KEY} || '',
     );
 has 'secret' => (is  => 'rw',
 		 isa => 'Str',
+		 default => $ENV{GDAX_API_SECRET} || '',
     );
 has 'passphrase' => (is  => 'rw',
 		     isa => 'Str',
+		     default => $ENV{GDAX_API_PASSPHRASE} || '',
     );
 has 'method' => (is  => 'rw',
 		 isa => 'Str',

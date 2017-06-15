@@ -14,12 +14,14 @@ can_ok($account, 'history');
 can_ok($account, 'holds');
  
  SKIP: {
-     skip 'GDAX_EXTERNAL_SECRET environment variable not set', 8
-	 unless ($ENV{GDAX_EXTERNAL_SECRET} || $ENV{GDAX_EXTERNAL_SECRET_FORK});
+     skip 'GDAX_* environment variables not set', 8
+	 unless (($ENV{GDAX_EXTERNAL_SECRET} || $ENV{GDAX_EXTERNAL_SECRET_FORK}) ||
+		 ($ENV{GDAX_API_KEY} && $ENV{GDAX_API_SECRET} && $ENV{GDAX_API_PASSPHRASE})
+	 );
      if ($ENV{GDAX_EXTERNAL_SECRET_FORK}) {
 	 warn "GDAX external_secret forking here - stdout will not be visible, if you have to enter in passphrases\n";
 	 ok($account->external_secret($ENV{GDAX_EXTERNAL_SECRET_FORK}, 1), 'secret fork');
-     } else {
+     } elsif ($ENV{GDAX_EXTERNAL_SECRET}) {
 	 ok($account->external_secret($ENV{GDAX_EXTERNAL_SECRET}), 'secret file');
      }
 
