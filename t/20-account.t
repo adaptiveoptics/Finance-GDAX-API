@@ -1,7 +1,8 @@
 use v5.20;
 use warnings;
 use Test::More;
-use lib 'lib';
+use lib qw(lib t/lib);
+use GDAXTestHelper;
 
 BEGIN {
     use_ok('Finance::GDAX::API::Account');
@@ -14,17 +15,13 @@ can_ok($account, 'history');
 can_ok($account, 'holds');
  
  SKIP: {
-     skip 'GDAX_* environment variables not set', 8
-	 unless (($ENV{GDAX_EXTERNAL_SECRET} || $ENV{GDAX_EXTERNAL_SECRET_FORK}) ||
-		 ($ENV{GDAX_API_KEY} && $ENV{GDAX_API_SECRET} && $ENV{GDAX_API_PASSPHRASE})
-	 );
-     if ($ENV{GDAX_EXTERNAL_SECRET_FORK}) {
-	 warn "GDAX external_secret forking here - stdout will not be visible, if you have to enter in passphrases\n";
-	 ok($account->external_secret($ENV{GDAX_EXTERNAL_SECRET_FORK}, 1), 'secret fork');
-     } elsif ($ENV{GDAX_EXTERNAL_SECRET}) {
-	 ok($account->external_secret($ENV{GDAX_EXTERNAL_SECRET}), 'secret file');
-     }
+     my $secret;
+     skip 'GDAX_* environment variables not set', 8 unless $secret = GDAX_environment_vars();
 
+     unless ($secret eq 'RAW ENVARS') {
+	 ok($account->external_secret($$secret[0], $$secret[1]), 'external secrets');
+     }
+     
      $account->debug(1); # Make sure this is set to 1 or you'll use live data
      
      ok(my $response = $account->get_all, 'get_all accounts list');
