@@ -7,6 +7,37 @@ use namespace::autoclean;
 
 extends 'Finance::GDAX::API::Request';
 
+sub get_all {
+    my $self = shift;
+    $self->method('GET');
+    $self->path('/accounts');
+    return $self->send;
+}
+
+sub get {
+    my ($self, $account_id) = @_;
+    die 'Account ID is required' unless $account_id;
+    $self->method('GET');
+    $self->path("/accounts/$account_id");
+    return $self->send;
+}
+
+sub history {
+    my ($self, $account_id) = @_;
+    die 'Account ID is required' unless $account_id;
+    $self->method('GET');
+    $self->path("/accounts/$account_id/ledger");
+    return $self->send;
+}
+
+sub holds {
+    my ($self, $account_id) = @_;
+    die 'Account ID is required' unless $account_id;
+    $self->method('GET');
+    $self->path("/accounts/$account_id/holds");
+    return $self->send;
+}
+
 =head1 NAME
 
 Finance::GDAX::API::Account - Work with GDAX Accounts
@@ -88,15 +119,6 @@ docs:
 
 However, this does not appear to be exactly what they are sending now.
 
-=cut
-
-sub get_all {
-    my $self = shift;
-    $self->method('GET');
-    $self->path('/accounts');
-    return $self->send;
-}
-
 =head2 C<get> $account_id
 
 The get method requires passing an account id and returns a hash of
@@ -122,16 +144,6 @@ docs:
                  the account
   default_amount [margin] amount defaulted on due to not being able to pay
                  back funding
-
-=cut
-
-sub get {
-    my ($self, $account_id) = @_;
-    die 'Account ID is required' unless $account_id;
-    $self->method('GET');
-    $self->path("/accounts/$account_id");
-    return $self->send;
-}
 
 =head2 C<history> $account_id
 
@@ -167,16 +179,6 @@ are:
   fee      Fee as a result of a trade
   rebate   Fee rebate as per our fee schedule
 
-=cut
-
-sub history {
-    my ($self, $account_id) = @_;
-    die 'Account ID is required' unless $account_id;
-    $self->method('GET');
-    $self->path("/accounts/$account_id/ledger");
-    return $self->send;
-}
-
 =head2 C<holds> $account_id
 
 The holds method returns an array of hashes representing the holds placed on the $account_id account, which happen due to active orders or pending withdrawls.
@@ -197,14 +199,6 @@ docs:
   ]
 
 =cut
-
-sub holds {
-    my ($self, $account_id) = @_;
-    die 'Account ID is required' unless $account_id;
-    $self->method('GET');
-    $self->path("/accounts/$account_id/holds");
-    return $self->send;
-}
 
 __PACKAGE__->meta->make_immutable;
 1;

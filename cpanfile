@@ -14,4 +14,5 @@ requires 'REST::Client' => '273';
 requires 'LWP::Protocol::https' => '6.06';
 on test => sub {
     requires 'Test::More' => '0.88';
+    requires 'Test::Exception' => '0.35';
 }

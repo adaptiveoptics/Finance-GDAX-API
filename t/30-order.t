@@ -1,6 +1,7 @@
 use v5.20;
 use warnings;
 use Test::More;
+use Test::Exception;
 use lib qw(lib t/lib);
 use GDAXTestHelper;
 
@@ -9,8 +10,21 @@ BEGIN {
 }
 
 my $order = new_ok('Finance::GDAX::API::Order');
-#can_ok($account, 'get_all');
+can_ok($order, 'initiate');
 
+dies_ok { $order->price(-45) } 'bad price dies ok';
+dies_ok { $order->size(0) } 'bad size dies ok';
+dies_ok { $order->type('BAD') } 'bad type dies ok';
+dies_ok { $order->side('foolish') } 'bad side dies ok';
+dies_ok { $order->stp('xx') } 'bad stp dies ok';
+dies_ok { $order->time_in_force('UGH') } 'bad time_in_force dies ok';
+dies_ok { $order->post_only('String') } 'bad post_only dies ok';
+
+# Set up limit order
+ok $order->side('buy'), 'buy side set';
+ok $order->product_id('BTC-USD'), 'product_id set';
+ok $order->price(500.23), 'price set';
+ok $order->size(0.5), 'size set';
  
  SKIP: {
      my $secret;
@@ -20,7 +34,21 @@ my $order = new_ok('Finance::GDAX::API::Order');
 	 ok($order->external_secret($$secret[0], $$secret[1]), 'external secrets');
      }
      
-     $order->debug(1); # Make sure this is set to 1 or you'll use live data     
+     $order->debug(1); # Make sure this is set to 1 or you'll use live data
+
+     ok (my $result = $order->initiate, 'limit order initiated');
+
+     # Order Lists
+     warn "Trying API Keys again...\n";
+     my $order = Finance::GDAX::API::Order->new;
+     unless ($secret eq 'RAW ENVARS') {
+	 $order->external_secret($$secret[0], $$secret[1]);
+     }
+     ok (my $list   = $order->list, 'list of orders');
+     ok ($list = $order->list(['active','pending']), 'list with multiple status');
+     ok ($list = $order->list(undef, 'BTC-USD'), 'list of product_id');
+     ok ($list = $order->list(['active','pending'], 'BTC-USD'), 'list with multiple status with product_id');
+
 }
 
 done_testing();

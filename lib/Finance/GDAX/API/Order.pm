@@ -8,15 +8,184 @@ use namespace::autoclean;
 
 extends 'Finance::GDAX::API::Request';
 
+our @body_attributes = ('client_oid',
+			'type',
+			'side',
+			'product_id',
+			'stp',
+			'price',
+			'size',
+			'time_in_force',
+			'cancel_after',
+			'post_only',
+			'funds',
+			'overdraft_enabled',
+			'funding_amount');
+
+## Common t all order types
+#  
+has 'client_oid' => (is  => 'rw',
+		     isa => 'Str',
+    );
+has 'type' => (is  => 'rw',
+	       isa => 'OrderType',
+	       default => 'limit',
+    );
+has 'side' => (is  => 'rw',
+	       isa => 'OrderSide',
+    );
+has 'product_id' => (is  => 'rw',
+		     isa => 'Str',
+    );
+has 'stp' => (is  => 'rw',
+	      isa => 'OrderSelfTradePreventionFlag',
+    );
+
+## Limit orders
+#
+has 'price' => (is  => 'rw',
+		isa => 'PositiveNum',
+    );
+has 'size' => (is  => 'rw',
+	       isa => 'PositiveNum',
+    );
+has 'time_in_force' => (is  => 'rw',
+			isa => 'OrderTimeInForce',
+    );
+has 'cancel_after' => (is  => 'rw',
+		       isa => 'Str',
+    );
+has 'post_only' => (is  => 'rw',
+		    isa => 'Bool',
+    );
+
+## Market orders
+#
+has 'funds' => (is  => 'rw',
+		isa => 'PositiveNum',
+    );
+
+## Stop orders
+#
+has 'overdraft_enabled' => (is  => 'rw',
+			    isa => 'Bool',
+    );
+has 'funding_amount' => (is  => 'rw',
+			 isa => 'PositiveNum',
+    );
+
+sub initiate {
+    my $self = shift;
+    die 'Orders need side, "buy" or "sell"' unless $self->side;
+    die 'Orders need a product_id' unless $self->product_id;
+    if ($self->type eq 'limit') {
+	die 'Limit orders need price' unless $self->price;
+	die 'Limit orders need size' unless $self->size;
+	if ($self->cancel_after) {
+	    unless ($self->time_in_force eq 'GTT') {
+		die 'time_in_force must be "GTT" when using cancel_after';
+	    }
+	}
+	if ($self->post_only) {
+	    if ($self->time_in_force =~ /^(IOC|FOK)$/) {
+		die 'post_only is invalid with time_in_force IOC or FOK';
+	    }
+	}
+    }
+    if ($self->type =~ /^(market|stop)$/) {
+	unless ($self->size or $self->funds) {
+	    die 'market and stop orders must specify either size or funds';
+	}
+    }
+    my %body;
+    map { $body{$_} = $self->$_ if defined $self->$_ } @body_attributes;
+    $self->body(\%body);
+    $self->method('POST');
+    $self->path('/orders');
+    return $self->send;
+}
+
+sub cancel {
+    my ($self, $order_id) = @_;
+    die 'Order ID is required' unless $order_id;
+    $self->method('DELETE');
+    $self->path("/orders/$order_id");
+    return $self->send;
+}
+
+sub cancel_all {
+    my ($self, $product_id) = @_;
+    my $path = '/orders';
+    $path .= "?product_id=$product_id" if $product_id;
+    $self->method('DELETE');
+    $self->path($path);
+    return $self->send;
+}
+
+sub list {
+    my ($self, $status, $product_id) = @_;
+    my $path = '/orders';
+    my @qparams;
+    if ($status) {
+	if (ref($status) ne 'ARRAY') {
+	    $status = [$status];
+	}
+	map { push @qparams, "status=$_" } @$status;
+    }
+    push @qparams, "product_id=$product_id" if $product_id;
+    if (scalar @qparams) {
+	$path .= '?' . join('&', @qparams);
+    }
+    $self->method('GET');
+    warn $path;
+    $self->path($path);
+    return $self->send;
+}
+
+__PACKAGE__->meta->make_immutable;
+1;
+
 =head1 NAME
 
 Finance::GDAX::API::Order - Perl interface to the GDAX Order API
 
 =head1 SYNOPSIS
 
+  use Finance::GDAX::API::Order;
+
+  $order = Finance::GDAX::API::Order->new;
+  $order->side('buy');
+  $order->type('market');
+  $order->product_id('BTC-USD');
+  $order->funds(500.00);
+  $response = $order->initiate;
+  if ($response->error) { die "Error: ".$response->error };
+  
+
 =head1 DESCRIPTION
 
 Basic interface to the GDAX API for orders.
+
+The API shows the response should look something like this for orders
+intiated:
+
+  {
+    "id": "d0c5340b-6d6c-49d9-b567-48c4bfca13d2",
+    "price": "0.10000000",
+    "size": "0.01000000",
+    "product_id": "BTC-USD",
+    "side": "buy",
+    "stp": "dc",
+    "type": "limit",
+    "time_in_force": "GTC",
+    "post_only": false,
+    "created_at": "2016-12-08T20:02:28.53864Z",
+    "fill_fees": "0.0000000000000000",
+    "filled_size": "0.00000000",
+    "executed_value": "0.0000000000000000",
+    "status": "pending",
+    "settled": false
+  }
 
 =head1 ATTRIBUTES (common to all order types)
 
@@ -97,24 +266,6 @@ self-trade behavior, specify the stp flag.
   cn 	Cancel newest
   cb 	Cancel both
 
-=cut
-
-has 'client_oid' => (is  => 'rw',
-		     isa => 'Str',
-    );
-has 'type' => (is  => 'rw',
-	       isa => 'OrderType',
-    );
-has 'side' => (is  => 'rw',
-	       isa => 'OrderSide',
-    );
-has 'product_id' => (is  => 'rw',
-		     isa => 'Str',
-    );
-has 'stp' => (is  => 'rw',
-	      isa => 'OrderSelfTradePreventionFlag',
-    );
-
 =head1 ATTRIBUTES (limit orders)
 
 =head2 C<price>
@@ -178,24 +329,6 @@ The post-only flag indicates that the order should only make
 liquidity. If any part of the order results in taking liquidity, the
 order will be rejected and no part of it will execute.
 
-=cut
-
-has 'price' => (is  => 'rw',
-		isa => 'PositiveNum',
-    );
-has 'size' => (is  => 'rw',
-	       isa => 'PositiveNum',
-    );
-has 'time_in_force' => (is  => 'rw',
-			isa => 'OrderTimeInForce',
-    );
-has 'cancel_after' => (is  => 'rw',
-		       isa => 'Str',
-    );
-has 'post_only' => (is  => 'rw',
-		    isa => 'Bool',
-    );
-
 =head1 ATTRIBUTES (market orders)
 
 =head2 C<size>
@@ -229,12 +362,6 @@ received.
 
 * One of size or funds is required.
 
-=cut
-
-has 'funds' => (is  => 'rw',
-		isa => 'PositiveNum',
-    );
-
 =head1 ATTRIBUTES (stop order)
 
 =head2 C<price>
@@ -265,15 +392,79 @@ Desired price at which the stop order triggers
 * Margin can be used to receive funding by specifying either
   overdraft_enabled or funding_amount.
 
+=head1 METHODS
+
+=head2 C<initiate>
+
+Initiates the REST order request and returns the result, according to
+the current API docs, like
+
+  {
+    "id": "d0c5340b-6d6c-49d9-b567-48c4bfca13d2",
+    "price": "0.10000000",
+    "size": "0.01000000",
+    "product_id": "BTC-USD",
+    "side": "buy",
+    "stp": "dc",
+    "type": "limit",
+    "time_in_force": "GTC",
+    "post_only": false,
+    "created_at": "2016-12-08T20:02:28.53864Z",
+    "fill_fees": "0.0000000000000000",
+    "filled_size": "0.00000000",
+    "executed_value": "0.0000000000000000",
+    "status": "pending",
+    "settled": false
+  }
+
+If $order->error exists, then it will contain the error message.
+
+=head2 C<cancel> $order_id
+
+Cancels the $order_id, where $order_id is the server-assigned order_id
+and not the client-selected client_oid.
+
+Probelms will be reported in ->error
+
+=head2 C<cancel_all> ($product_id)
+
+Cancels all orders, or if $product_id is specified, cancels only
+orders within those prodcuts.
+
+An array will be returned, according to current API docs:
+
+  [
+    "144c6f8e-713f-4682-8435-5280fbe8b2b4",
+    "debe4907-95dc-442f-af3b-cec12f42ebda",
+    "cf7aceee-7b08-4227-a76c-3858144323ab",
+    "dfc5ae27-cadb-4c0c-beef-8994936fde8a",
+    "34fecfbf-de33-4273-b2c6-baf8e8948be4"
+  ]
+
+=head2 C<list> ($status, $product_id)
+
+Returns a list of orders. You can limit the list by specifying order
+status and product_id. These are positional parameters, so status must
+come first even if undefined (or 0).
+
+  $list = $order->list;
+
+$status can be an arrayref, in which case it will list each of the
+given status.
+
+  $list = $order->list(['open','settled'], 'BTC-USD');
+
+To quote from the API:
+
+=over
+
+Orders which are no longer resting on the order book, will be marked
+with the done status. There is a small window between an order being
+done and settled. An order is settled when all of the fills have
+settled and the remaining holds (if any) have been removed.
+
+=back
+
+By default open, pending and active orders are returned.
+
 =cut
-
-has 'overdraft_enabled' => (is  => 'rw',
-			    isa => 'Bool',
-    );
-has 'funding_amount' => (is  => 'rw',
-			 isa => 'PositiveNum',
-    );
-
-
-__PACKAGE__->meta->make_immutable;
-1;
