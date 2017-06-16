@@ -137,8 +137,15 @@ sub list {
 	$path .= '?' . join('&', @qparams);
     }
     $self->method('GET');
-    warn $path;
     $self->path($path);
+    return $self->send;
+}
+
+sub get {
+    my ($self, $order_id) = @_;
+    die 'Order ID is required' unless $order_id;
+    $self->method('GET');
+    $self->path("/orders/$order_id");
     return $self->send;
 }
 
@@ -466,5 +473,9 @@ settled and the remaining holds (if any) have been removed.
 =back
 
 By default open, pending and active orders are returned.
+
+=head2 C<get> $order_id
+
+Returns a hash of the specified $order_id
 
 =cut
