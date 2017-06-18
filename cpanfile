@@ -6,6 +6,7 @@ requires 'ExtUtils::MakeMaker' => '6.17';
 #requires 'Try::Tiny' => '0.22';
 #requires 'Config::Tiny' => '2.23';
 #requires 'DateTime::Format::Pg' => '0.16010';
+requires 'JSON' => '2.90';
 requires 'namespace::autoclean' => '0.20';
 requires 'Moose' => '2.12';
 requires 'Digest::SHA' => '5.93';
