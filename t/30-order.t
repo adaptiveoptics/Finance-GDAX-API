@@ -10,6 +10,26 @@ BEGIN {
 }
 
 my $order = new_ok('Finance::GDAX::API::Order');
+# Attributes
+can_ok($order, 'client_oid');
+can_ok($order, 'type');
+can_ok($order, 'side');
+can_ok($order, 'product_id');
+can_ok($order, 'stp');
+can_ok($order, 'price');
+can_ok($order, 'size');
+can_ok($order, 'time_in_force');
+can_ok($order, 'cancel_after');
+can_ok($order, 'post_only');
+can_ok($order, 'funds');
+can_ok($order, 'overdraft_enabled');
+can_ok($order, 'funding_amount');
+# Methods
+can_ok($order, 'initiate');
+can_ok($order, 'get');
+can_ok($order, 'list');
+can_ok($order, 'cancel');
+can_ok($order, 'cancel_all');
 can_ok($order, 'initiate');
 
 dies_ok { $order->price(-45) } 'bad price dies ok';
@@ -27,8 +47,10 @@ ok $order->price(500.23), 'price set';
 ok $order->size(0.5), 'size set';
  
  SKIP: {
-     my $secret;
-     skip 'GDAX_* environment variables not set', 8 unless $secret = GDAX_environment_vars();
+     my $secret = GDAX_environment_vars();
+     my $skipnum = 0;
+     if ($secret) { $skipnum = $secret ne 'RAW ENVARS' ? 6 : 5 };
+     skip 'GDAX_* environment variables not set', $skipnum unless $secret;
 
      unless ($secret eq 'RAW ENVARS') {
 	 ok($order->external_secret($$secret[0], $$secret[1]), 'external secrets');
