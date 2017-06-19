@@ -10,7 +10,7 @@ extends 'Finance::GDAX::API::Request';
 
 # List funding
 has 'status' => (is  => 'rw',
-		 isa => 'Maybe[OrderFundingStatus]',
+		 isa => 'Maybe[FundingStatus]',
     );
 
 # Repay funding
