@@ -11,8 +11,13 @@ BEGIN {
 
 my $funding = new_ok('Finance::GDAX::API::Funding');
 can_ok($funding, 'get');
+can_ok($funding, 'repay');
 can_ok($funding, 'status');
+can_ok($funding, 'amount');
+can_ok($funding, 'currency');
+
 dies_ok { $funding->status('badstatus') } 'status dies good on bad values';
+dies_ok { $funding->amount(-250.00) } 'amount dies good on bad value';
 ok ($funding->status('settled'), 'status can be set to known good value');
     
  SKIP: {

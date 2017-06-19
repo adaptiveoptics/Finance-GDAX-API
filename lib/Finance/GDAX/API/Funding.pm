@@ -8,8 +8,17 @@ use namespace::autoclean;
 
 extends 'Finance::GDAX::API::Request';
 
+# List funding
 has 'status' => (is  => 'rw',
 		 isa => 'Maybe[OrderFundingStatus]',
+    );
+
+# Repay funding
+has 'amount' => (is  => 'rw',
+		 isa => 'PositiveNum',
+    );
+has 'currency' => (is  => 'rw',
+		   isa => 'Str',
     );
 
 sub get {
@@ -18,6 +27,20 @@ sub get {
     $path .= '?status=' . $self->status if $self->status;
     $self->path($path);
     $self->method('GET');
+    return $self->send;
+}
+
+sub repay {
+    my ($self, $amount, $currency) = @_;
+    $amount   = $amount   || $self->amount;
+    $currency = $currency || $self->currency;
+    $self->amount($amount);
+    $self->currency($currency);
+    die 'repay must specify an amount and currency' unless ($amount && $currency);
+    $self->method('POST');
+    $self->body({ amount   => $amount,
+		  currency => $currency });
+    $self->path('/funding/repay');
     return $self->send;
 }
 
@@ -39,10 +62,13 @@ Finance::GDAX::API::Funding - List GDAX margin funding records
   $funding->status('settled');
   $records = $funding->get;
 
+  # To repay some margin funding
+  $funding->repay('255.45', 'USD');
+
 =head2 DESCRIPTION
 
 Returns an array of funding records from GDAX for orders placed with a
-margin profile.
+margin profile. Also repays margin funding.
 
 From the GDAX API:
 
@@ -94,10 +120,28 @@ $status.
 Currently the GDAX API states these status must be "outstanding",
 "settled" or "rejected".
 
+=head2 C<amount> $number
+
+The amount to be repaid to margin.
+
+=head2 C<currency> $currency_string
+
+The currency of the amount -- for example "USD".
+
+You must specify currency and amount when calling the repay method.
+
 =head1 METHODS
 
 =head2 C<get>
 
 Returns an array of funding records from GDAX.
+
+=head2 C<repay> [$amount, $currency]
+
+Repays the margin, from the oldest funding records first.
+
+Specifying the optional ordered parameters $amount and $currency on
+the method call will override any attribute values set for amount and
+currency.
 
 =cut
