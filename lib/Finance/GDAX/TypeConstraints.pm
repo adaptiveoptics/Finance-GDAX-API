@@ -10,6 +10,7 @@ subtype 'PositiveNum',
     where { $_ > 0 },
     message { "$_ is not a positive number" };
 
+enum 'OrderFundingStatus',           [qw(outstanding settled rejected)];
 enum 'OrderSelfTradePreventionFlag', [qw(dc co cn cb)];
 enum 'OrderSide',                    [qw(buy sell)];
 enum 'OrderTimeInForce',             [qw(GTC GTT IOC FOK)];
