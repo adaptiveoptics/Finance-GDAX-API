@@ -20,7 +20,7 @@ ok ($position->repay_only(1), 'repay_only can be set to known good value');
  SKIP: {
      my $secret = GDAX_environment_vars();
      my $skipnum = 0;
-     if ($secret) { $skipnum = $secret ne 'RAW ENVARS' ? 3 : 2 };
+     if ($secret) { $skipnum = $secret ne 'RAW ENVARS' ? 6 : 5 };
      skip 'GDAX_* environment variables not set', $skipnum unless $secret ;
 
      unless ($secret eq 'RAW ENVARS') {
@@ -29,8 +29,11 @@ ok ($position->repay_only(1), 'repay_only can be set to known good value');
      
      $position->debug(1); # Make sure this is set to 1 or you'll use live data
 
-     #ok (my $result = $position->initiate, 'can get all funding');
-     #is (ref $result, 'ARRAY', 'get returns array');
+     ok (my $result = $position->get, 'can get overview of profile');
+     is (ref $result, 'HASH', 'get returns a hash');
+     ok (defined $$result{accounts}, 'Hash returns accounts key');
+     ok (defined $$result{accounts}{USD}, 'Hash returns USD account key');
+     ok (defined $$result{accounts}{USD}{id}, 'Hash returns USD account id key');
 }
 
 done_testing();
