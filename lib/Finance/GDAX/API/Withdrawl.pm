@@ -1,4 +1,4 @@
-package Finance::GDAX::API::Deposit;
+package Finance::GDAX::API::Withdrawl;
 use v5.20;
 use warnings;
 use Moose;
@@ -21,14 +21,14 @@ has 'currency' => (is  => 'rw',
 		   isa => 'Str',
     );
 
-sub from_payment {
+sub to_payment {
     my $self = shift;
     unless ($self->payment_method_id &&
 	    $self->amount &&
 	    $self->currency) {
 	die 'payments need amount and currency set';
     }
-    $self->path('/deposits/payment-method');
+    $self->path('/withdrawls/payment-method');
     $self->method('POST');
     $self->body({ amount            => $self->amount,
 		  currency          => $self->currency,
@@ -37,14 +37,14 @@ sub from_payment {
     return $self->send;
 }
 
-sub from_coinbase {
+sub to_coinbase {
     my $self = shift;
     unless ($self->coinbase_account_id &&
 	    $self->amount &&
 	    $self->currency) {
 	die 'coinbase needs an amount and currency set';
     }
-    $self->path('/deposits/coinbase-account');
+    $self->path('/withdrawls/coinbase-account');
     $self->method('POST');
     $self->body({ amount              => $self->amount,
 		  currency            => $self->currency,
@@ -58,28 +58,29 @@ __PACKAGE__->meta->make_immutable;
 
 =head1 NAME
 
-Finance::GDAX::API::Deposit - Deposit funds via Payment Method or
+Finance::GDAX::API::Withdrawl - Withdraw funds to a Payment Method or
 Coinbase
 
 =head1 SYNOPSIS
 
-  use Finance::GDAX::API::Deposit;
+  use Finance::GDAX::API::Withdraw;
 
-  $deposit = Finance::GDAX::API::Deposit->new(
-          currency => 'USD',
-          amount   => '250.00');
-  $deposit->payment_method_id('kwji-wefwe-ewrgeurg-wef');
+  $withdraw = Finance::GDAX::API::Withdraw->new(
+              currency => 'USD',
+              amount   => '250.00');
 
-  $response = $deposit->from_payment;
+  $withdraw->payment_method_id('kwji-wefwe-ewrgeurg-wef');
 
-  # Or, from a Coinbase account
-  $deposit->coinbase_account_id('woifhe-i234h-fwikn-wfihwe');
+  $response = $withdraw->to_payment;
 
-  $response = $deposit->from_coinbase;
+  # Or, to a Coinbase account
+  $withdraw->coinbase_account_id('woifhe-i234h-fwikn-wfihwe');
+
+  $response = $withdraw->to_coinbase;
 
 =head2 DESCRIPTION
 
-Used to transfer funds into your GDAX account, either from a
+Used to transfer funds out of your GDAX account, either to a
 predefined Payment Method or your Coinbase account.
 
 Both methods require the same two attributes: "amount" and "currency"
@@ -102,7 +103,7 @@ Either this or payment_method_id must be set.
 
 =head2 C<amount> $number
 
-The amount to be deposited.
+The amount to be withdrawn.
 
 =head2 C<currency> $currency_string
 
@@ -110,7 +111,7 @@ The currency of the amount -- for example "USD".
 
 =head1 METHODS
 
-=head2 C<from_payment>
+=head2 C<to_payment>
 
 All attributes must be set before calling this method. The return
 value is a hash that will describe the result of the payment.
@@ -119,12 +120,13 @@ From the current GDAX API documentation, this is how that returned hash is
 keyed:
 
   {
-    "amount": 10.00,
+    "id":"593533d2-ff31-46e0-b22e-ca754147a96a",
+    "amount": "10.00",
     "currency": "USD",
-    "payment_method_id": "bc677162-d934-5f1a-968c-a496b1c1270b"
+    "payout_at": "2016-08-20T00:31:09Z"
   }
 
-=head2 C<from_coinbase>
+=head2 C<to_coinbase>
 
 All attributes must be set before calling this method. The return
 value is a hash that will describe the result of the funds move.
@@ -133,8 +135,8 @@ From the current GDAX API documentation, this is how that returned hash is
 keyed:
 
   {
-    "id": "593533d2-ff31-46e0-b22e-ca754147a96a",
-    "amount": "10.00",
+    "id":"593533d2-ff31-46e0-b22e-ca754147a96a",
+    "amount":"10.00",
     "currency": "BTC",
   }
 

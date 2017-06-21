@@ -18,7 +18,7 @@ can_ok($deposit, 'currency');
 dies_ok { $deposit->amount(-250.00) } 'amount dies good on bad value';
 ok ($deposit->amount(250.00), 'amount can be set to known good value');
 dies_ok { $deposit->from_payment } 'from_payment dies correctly if not all attributes set';
-dies_ok { $deposit->from_coinbase } 'from_payment dies correctly if not all attributes set';
+dies_ok { $deposit->from_coinbase } 'from_coinbase dies correctly if not all attributes set';
     
  SKIP: {
      my $secret = GDAX_environment_vars();
@@ -37,4 +37,3 @@ dies_ok { $deposit->from_coinbase } 'from_payment dies correctly if not all attr
 }
 
 done_testing();
-
