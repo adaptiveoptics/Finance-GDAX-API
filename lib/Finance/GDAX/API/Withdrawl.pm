@@ -14,6 +14,9 @@ has 'payment_method_id' => (is  => 'rw',
 has 'coinbase_account_id' => (is  => 'rw',
 			      isa => 'Str',
     );
+has 'crypto_address' => (is  => 'rw',
+			 isa => 'Str',
+    );
 has 'amount' => (is  => 'rw',
 		 isa => 'PositiveNum',
     );
@@ -53,6 +56,22 @@ sub to_coinbase {
     return $self->send;
 }
 
+sub to_crypto {
+    my $self = shift;
+    unless ($self->crypto_address &&
+	    $self->amount &&
+	    $self->currency) {
+	die 'crypto_address needs an amount and currency set';
+    }
+    $self->path('/withdrawls/crypto');
+    $self->method('POST');
+    $self->body({ amount         => $self->amount,
+		  currency       => $self->currency,
+		  crypto_address => $self->coinbase_account_id,
+		});
+    return $self->send;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
 
@@ -78,6 +97,9 @@ Coinbase
 
   $response = $withdraw->to_coinbase;
 
+  # Or, to a Crypto address
+  $withdraw->crypto_address('1PtbhinXWpKZjD7CXfFR7kG8RF8vJTMCxA');
+
 =head2 DESCRIPTION
 
 Used to transfer funds out of your GDAX account, either to a
@@ -93,13 +115,13 @@ id's.
 
 ID of the payment method.
 
-Either this or coinbase_account_id must be set.
-
 =head2 C<coinbase_account_id> $string
 
 ID of the coinbase account.
 
-Either this or payment_method_id must be set.
+=head2 C<crypto_address> $string
+
+Withdraw funds to a crypto address.
 
 =head2 C<amount> $number
 
@@ -127,6 +149,20 @@ keyed:
   }
 
 =head2 C<to_coinbase>
+
+All attributes must be set before calling this method. The return
+value is a hash that will describe the result of the funds move.
+
+From the current GDAX API documentation, this is how that returned hash is
+keyed:
+
+  {
+    "id":"593533d2-ff31-46e0-b22e-ca754147a96a",
+    "amount":"10.00",
+    "currency": "BTC",
+  }
+
+=head2 C<to_crypto>
 
 All attributes must be set before calling this method. The return
 value is a hash that will describe the result of the funds move.
