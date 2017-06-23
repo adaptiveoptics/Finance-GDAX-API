@@ -40,6 +40,7 @@ sub get {
     my ($self, $report_id) = @_;
     $report_id = $report_id || $self->report_id;
     die 'no report_id specified to get' unless $report_id;
+    $self->report_id($report_id);
     my $path = "/reports/$report_id";
     warn $path;
     $self->path($path);
@@ -76,99 +77,143 @@ __PACKAGE__->meta->make_immutable;
 
 =head1 NAME
 
-Finance::GDAX::API::Funding - List GDAX margin funding records
+Finance::GDAX::API::Report - Generate GDAX Reports
 
 =head1 SYNOPSIS
 
-  use Finance::GDAX::API::Funding;
+  use Finance::GDAX::API::Report;
 
-  $funding = Finance::GDAX::API::Funding->new;
-  $records = $funding->get;
+  $report = Finance::GDAX::API::Report->new(
+            start_date => '2017-06-01T00:00:00.000Z',
+            end_date   => '2017-06-15T00:00:00.000Z',
+            type       => 'fills');
 
-  # To limit records based on current status
-  $funding->status('settled');
-  $records = $funding->get;
+  $report->product_id('BTC-USD');
+  $result = $report->create;
 
-  # To repay some margin funding
-  $funding->repay('255.45', 'USD');
+  $report_id = $$result{id};
+
+  # After you create the report, you check if it's generated yet
+
+  $report = Finance::GDAX::API::Report->new;
+  $result = $report->get($report_id);
+  
+  if ($$result{status} eq 'ready') {
+     `wget $$result{file_url}`;
+  }
 
 =head2 DESCRIPTION
 
-Returns an array of funding records from GDAX for orders placed with a
-margin profile. Also repays margin funding.
+Generating reports at GDAX is a 2-step process. First you must tell
+GDAX to create the report, then you must check to see if the report is
+ready for download at a URL. You can also specify and email address to
+have it mailed.
 
-From the GDAX API:
+Reports can be "fills" or "account". If fills, then a product_id is
+needed. If account then an account_id is needed.
 
-Every order placed with a margin profile that draws funding will
-create a funding record.
-
-  [
-  {
-    "id": "b93d26cd-7193-4c8d-bfcc-446b2fe18f71",
-    "order_id": "b93d26cd-7193-4c8d-bfcc-446b2fe18f71",
-    "profile_id": "d881e5a6-58eb-47cd-b8e2-8d9f2e3ec6f6",
-    "amount": "1057.6519956381537500",
-    "status": "settled",
-    "created_at": "2017-03-17T23:46:16.663397Z",
-    "currency": "USD",
-    "repaid_amount": "1057.6519956381537500",
-    "default_amount": "0",
-    "repaid_default": false
-  },
-  {
-    "id": "280c0a56-f2fa-4d3b-a199-92df76fff5cd",
-    "order_id": "280c0a56-f2fa-4d3b-a199-92df76fff5cd",
-    "profile_id": "d881e5a6-58eb-47cd-b8e2-8d9f2e3ec6f6",
-    "amount": "545.2400000000000000",
-    "status": "outstanding",
-    "created_at": "2017-03-18T00:34:34.270484Z",
-    "currency": "USD",
-    "repaid_amount": "532.7580047716682500"
-  },
-  {
-    "id": "d6ec039a-00eb-4bec-a3e1-f5c6a97c4afc",
-    "order_id": "d6ec039a-00eb-4bec-a3e1-f5c6a97c4afc",
-    "profile_id": "d881e5a6-58eb-47cd-b8e2-8d9f2e3ec6f6",
-    "amount": "9.9999999958500000",
-    "status": "outstanding",
-    "created_at": "2017-03-19T23:16:11.615181Z",
-    "currency": "USD",
-    "repaid_amount": "0"
-  }
-  ]
+The format can be "pdf" or "csv" and defaults to "pdf".
 
 =head1 ATTRIBUTES
 
-=head2 C<status> $string
+=head2 C<type> $string
 
-Limit the records returned to those records of status
-$status.
+Report type, either "fills" or "account". This must be set before
+calling the "create" method.
 
-Currently the GDAX API states these status must be "outstanding",
-"settled" or "rejected".
+=head2 C<start_date> $datetime_string
 
-=head2 C<amount> $number
+Start of datetime range of report in the format
+"2014-11-01T00:00:00.000Z" (required for create)
 
-The amount to be repaid to margin.
+=head2 C<end_date> $datetime_string
 
-=head2 C<currency> $currency_string
+End of datetime range of report in the format
+"2014-11-01T00:00:00.000Z" (required for create)
 
-The currency of the amount -- for example "USD".
+=head2 C<product_id> $string
 
-You must specify currency and amount when calling the repay method.
+The product ID, eg 'BTC-USD'. Required for fills type.
+
+=head2 C<account_id> $string
+
+The account ID. Required for account type.
+
+=head2 C<format> $string
+
+Output format of report, either "pdf" or "csv" (default "pdf")
+
+=head2 C<email> $string
+
+Email address to send the report to (optional)
+
+=head2 C<report_id> $string
+
+This is used for the "get" method only, and can also be passed as a
+parameter to the "get" method.
+
+It is the report id as returned by the "create" method.
 
 =head1 METHODS
 
-=head2 C<get>
+=head2 C<create>
 
-Returns an array of funding records from GDAX.
+Creates the GDAX report based upon the attributes set and returns a
+hash result as documented in the API:
 
-=head2 C<repay> [$amount, $currency]
+  {
+    "id": "0428b97b-bec1-429e-a94c-59232926778d",
+    "type": "fills",
+    "status": "pending",
+    "created_at": "2015-01-06T10:34:47.000Z",
+    "completed_at": undefined,
+    "expires_at": "2015-01-13T10:35:47.000Z",
+    "file_url": undefined,
+    "params": {
+        "start_date": "2014-11-01T00:00:00.000Z",
+        "end_date": "2014-11-30T23:59:59.000Z"
+    }
+  }
 
-Repays the margin, from the oldest funding records first.
+=head2 C<get> [$report_id]
 
-Specifying the optional ordered parameters $amount and $currency on
-the method call will override any attribute values set for amount and
-currency.
+Returns a hash representing the status of the report created with the
+"create" method.
+
+The parameter $report_id is optional - if it is passed to the method,
+it overrides the object's report_id attribute.
+
+The result when first creating the report might look like this:
+
+  {
+    "id": "0428b97b-bec1-429e-a94c-59232926778d",
+    "type": "fills",
+    "status": "creating",
+    "created_at": "2015-01-06T10:34:47.000Z",
+    "completed_at": undefined,
+    "expires_at": "2015-01-13T10:35:47.000Z",
+    "file_url": undefined,
+    "params": {
+        "start_date": "2014-11-01T00:00:00.000Z",
+        "end_date": "2014-11-30T23:59:59.000Z"
+    }
+  }
+
+While the result when GDAX finishes generating the report might look
+like this:
+
+  {
+    "id": "0428b97b-bec1-429e-a94c-59232926778d",
+    "type": "fills",
+    "status": "ready",
+    "created_at": "2015-01-06T10:34:47.000Z",
+    "completed_at": "2015-01-06T10:35:47.000Z",
+    "expires_at": "2015-01-13T10:35:47.000Z",
+    "file_url": "https://example.com/0428b97b.../fills.pdf",
+    "params": {
+        "start_date": "2014-11-01T00:00:00.000Z",
+        "end_date": "2014-11-30T23:59:59.000Z"
+    }
+  }
 
 =cut
