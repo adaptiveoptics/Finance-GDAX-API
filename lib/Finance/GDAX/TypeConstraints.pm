@@ -16,6 +16,8 @@ enum 'OrderSelfTradePreventionFlag', [qw(dc co cn cb)];
 enum 'OrderSide',                    [qw(buy sell)];
 enum 'OrderTimeInForce',             [qw(GTC GTT IOC FOK)];
 enum 'OrderType',                    [qw(limit market stop)];
+enum 'ReportFormat',                 [qw(pdf csv)];
+enum 'ReportType',                   [qw(fills account)];
 
 __PACKAGE__->meta->make_immutable;
 1;
