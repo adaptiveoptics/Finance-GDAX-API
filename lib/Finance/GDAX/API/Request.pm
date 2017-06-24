@@ -1,5 +1,6 @@
 package Finance::GDAX::API::Request;
-use v5.20;
+our $VERSION = '0.01';
+use 5.20.0;
 use warnings;
 use JSON;
 use Moose;
@@ -166,15 +167,18 @@ sandbox API. To do live data, you must set debug to 0.
 
 =head2 C<key>
 
-The GDAX API key
+The GDAX API key. This defaults to the environment variable
+$ENV{GDAX_API_KEY}
 
 =head2 C<secret>
 
-The GDAX API secret key
+The GDAX API secret key. This defaults to the environment variable
+$ENV{GDAX_API_SECRET}
 
 =head2 C<passphrase>
 
-The GDAX API passphrase
+The GDAX API passphrase. This defaults to the environment variable
+$ENV{GDAX_API_PASSPHRASE}
 
 =head2 C<error>
 

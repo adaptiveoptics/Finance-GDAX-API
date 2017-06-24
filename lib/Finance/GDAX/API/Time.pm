@@ -1,5 +1,6 @@
 package Finance::GDAX::API::Time;
-use v5.20;
+our $VERSION = '0.01';
+use 5.20.0;
 use warnings;
 use Moose;
 use Finance::GDAX::API::Request;

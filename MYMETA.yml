@@ -14,7 +14,7 @@ license: unknown
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: '1.4'
-name: Finance-GDAX
+name: Finance-GDAX-API
 no_index:
   directory:
     - t
@@ -22,10 +22,12 @@ no_index:
 requires:
   Digest::SHA: '5.93'
   ExtUtils::MakeMaker: '6.17'
+  JSON: '2.90'
   LWP::Protocol::https: '6.06'
   MIME::Base64: '3.15'
   Moose: '2.12'
   REST::Client: '273'
   namespace::autoclean: '0.20'
+  perl: '5.020'
 version: '0.01'
 x_serialization_backend: 'CPAN::Meta::YAML version 0.018'

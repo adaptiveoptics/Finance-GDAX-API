@@ -1,5 +1,6 @@
 package Finance::GDAX::API::Quote;
-use v5.20;
+our $VERSION = '0.01';
+use 5.20.0;
 use warnings;
 use Moose;
 use JSON;
