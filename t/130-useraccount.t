@@ -15,7 +15,7 @@ can_ok($account, 'trailing_volume');
  SKIP: {
      my $secret = GDAX_environment_vars();
      my $skipnum = 0;
-     if ($secret) { $skipnum = $secret ne 'RAW ENVARS' ? 1 : 0 };
+     if ($secret) { $skipnum = $secret ne 'RAW ENVARS' ? 3 : 2 };
      skip 'GDAX_* environment variables not set', $skipnum unless $secret ;
 
      unless ($secret eq 'RAW ENVARS') {

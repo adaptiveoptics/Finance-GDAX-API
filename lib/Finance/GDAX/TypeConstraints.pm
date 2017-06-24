@@ -5,10 +5,20 @@ use Moose;
 use Moose::Util::TypeConstraints;
 use namespace::autoclean;
 
+subtype 'PositiveInt',
+    as 'Int',
+    where { $_ > 0 },
+    message { "$_ is not a positive number" };
+
 subtype 'PositiveNum',
     as 'Num',
     where { $_ > 0 },
     message { "$_ is not a positive number" };
+
+subtype 'ProductLevel',
+    as 'Int',
+    where { $_ >= 1 and $_ <= 3 },
+    message { "Product level must be 1, 2 or 3" };
 
 enum 'FundingStatus',                [qw(outstanding settled rejected)];
 enum 'MarginTransferType',           [qw(deposit withdraw)];
