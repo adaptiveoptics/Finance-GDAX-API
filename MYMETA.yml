@@ -21,7 +21,7 @@ no_index:
     - inc
 requires:
   Digest::SHA: '5.93'
-  ExtUtils::MakeMaker: '6.17'
+  ExtUtils::MakeMaker::CPANfile: '0.07'
   JSON: '2.90'
   LWP::Protocol::https: '6.06'
   MIME::Base64: '3.15'
