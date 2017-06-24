@@ -1,6 +1,6 @@
 use ExtUtils::MakeMaker::CPANfile;
 WriteMakefile (
-    NAME     => 'Finance::GDAX',
+    NAME     => 'Finance::GDAX::API',
     VERSION  => '0.01',
     AUTHOR   => 'Mark Rushing <mark@orbislumem.net>',
     );

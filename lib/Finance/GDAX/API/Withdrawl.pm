@@ -2,7 +2,7 @@ package Finance::GDAX::API::Withdrawl;
 use v5.20;
 use warnings;
 use Moose;
-use Finance::GDAX::TypeConstraints;
+use Finance::GDAX::API::TypeConstraints;
 use Finance::GDAX::API::Request;
 use namespace::autoclean;
 
@@ -177,3 +177,18 @@ keyed:
   }
 
 =cut
+
+
+=head1 AUTHOR
+
+Mark Rushing <mark@orbislumen.net>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2017 by Home Grown Systems, SPC.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+

@@ -1,4 +1,4 @@
-package Finance::GDAX::TypeConstraints;
+package Finance::GDAX::API::TypeConstraints;
 use v5.20;
 use warnings;
 use Moose;
@@ -31,3 +31,4 @@ enum 'ReportType',                   [qw(fills account)];
 
 __PACKAGE__->meta->make_immutable;
 1;
+
