@@ -1,5 +1,5 @@
 package Finance::GDAX::API::UserAccount;
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 use 5.20.0;
 use warnings;
 use Moose;
@@ -42,7 +42,7 @@ Returns a list of hashes, representing the Trailing Volume on the account.
 From the GDAX API:
 
 This request will return your 30-day trailing volume for all
-products. This is a cached value that’s calculated every day at
+products. This is a cached value that's calculated every day at
 midnight UTC.
 
   [
