@@ -23,8 +23,11 @@ Finance::GDAX::API::Quote - Get a quote from the GDAX
 
 =head1 DESCRIPTION
 
-Gets a quote from the GDAX for the specified "product", which is
-mostly just a currency.
+Gets a quote from the GDAX for the specified "product". These quotes
+do not require GDAX API keys, but they suggesting keeping traffic low.
+
+More detailed information can be retrieve about products and history
+using API keys with other classes like Finance::GDAX::API::Product
 
 Currently, the supported products are:
 

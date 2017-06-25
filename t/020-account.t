@@ -43,6 +43,9 @@ can_ok($account, 'holds');
      ok(defined $$info{balance}, 'BTC account has balance defined');
 
      ok(my $history = $account->history($account_id), 'get BTC account history');
+     is(ref $history, 'ARRAY', 'get BTC account history is an array');
+     ok(my $holds = $account->holds($account_id), 'get BTC account holds');
+     is(ref $history, 'ARRAY', 'get BTC account holds is an array');
 }
 
 done_testing();
