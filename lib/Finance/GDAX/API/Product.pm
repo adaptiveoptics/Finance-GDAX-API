@@ -235,6 +235,9 @@ Level 3:
     ]
   }
 
+The GDAX API warns you that abuse of level 3 polling with cause your
+access to be limited or blocked -- to use websocket streams instead.
+
 =head2 C<ticker> [$product_id]
 
 Returns snapshot information about the last trade (tick), best bid/ask
