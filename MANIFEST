@@ -1,4 +1,5 @@
 cpanfile
+lib/Finance/GDAX/API.pm
 lib/Finance/GDAX/API/Account.pm
 lib/Finance/GDAX/API/CoinbaseAccount.pm
 lib/Finance/GDAX/API/Currency.pm
@@ -12,7 +13,6 @@ lib/Finance/GDAX/API/Position.pm
 lib/Finance/GDAX/API/Product.pm
 lib/Finance/GDAX/API/Quote.pm
 lib/Finance/GDAX/API/Report.pm
-lib/Finance/GDAX/API/Request.pm
 lib/Finance/GDAX/API/Time.pm
 lib/Finance/GDAX/API/TypeConstraints.pm
 lib/Finance/GDAX/API/URL.pm
@@ -24,7 +24,6 @@ MANIFEST			This list of files
 MYMETA.json
 MYMETA.yml
 README
-script/aes_file
 t/010-initial.t
 t/020-account.t
 t/030-order.t
