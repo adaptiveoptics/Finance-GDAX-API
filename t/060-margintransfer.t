@@ -24,7 +24,7 @@ dies_ok { $xfer->initiate } 'initiate dies correctly if not all attributes set';
  SKIP: {
      my $secret = GDAX_environment_vars();
      my $skipnum = 0;
-     if ($secret) { $skipnum = $secret ne 'RAW ENVARS' ? 3 : 2 };
+     if ($secret) { $skipnum = $secret ne 'RAW ENVARS' ? 1 : 0 };
      skip 'GDAX_* environment variables not set', $skipnum unless $secret ;
 
      unless ($secret eq 'RAW ENVARS') {
@@ -33,6 +33,7 @@ dies_ok { $xfer->initiate } 'initiate dies correctly if not all attributes set';
      
      $xfer->debug(1); # Make sure this is set to 1 or you'll use live data
 
+     # Tests here will require creating transactions first... will do later
      #ok (my $result = $xfer->initiate, 'can get all funding');
      #is (ref $result, 'ARRAY', 'get returns array');
 }

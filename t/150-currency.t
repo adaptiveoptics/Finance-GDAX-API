@@ -25,8 +25,6 @@ can_ok($currency, 'list');
 
      ok (my $result = $currency->list, 'can get currency list');
      is (ref $result, 'ARRAY', 'get returns array');
-
-     use Data::Dumper; print Dumper($result);
 }
 
 done_testing();
