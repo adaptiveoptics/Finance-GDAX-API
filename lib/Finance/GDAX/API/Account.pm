@@ -3,10 +3,10 @@ our $VERSION = '0.01';
 use 5.20.0;
 use warnings;
 use Moose;
-use Finance::GDAX::API::Request;
+use Finance::GDAX::API;
 use namespace::autoclean;
 
-extends 'Finance::GDAX::API::Request';
+extends 'Finance::GDAX::API';
 
 sub get_all {
     my $self = shift;
@@ -72,7 +72,7 @@ Finance::GDAX::API::Account - Work with GDAX Accounts
 
 Creates a GDAX account object to examine accounts.
 
-See Finance::GDAX::API::Request for details on API key requirements that
+See Finance::GDAX::API for details on API key requirements that
 need to be passed in.
 
 The HTTP response code can be accessed via the "response_code"

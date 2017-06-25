@@ -3,10 +3,10 @@ our $VERSION = '0.01';
 use 5.20.0;
 use warnings;
 use Moose;
-use Finance::GDAX::API::Request;
+use Finance::GDAX::API;
 use namespace::autoclean;
 
-extends 'Finance::GDAX::API::Request';
+extends 'Finance::GDAX::API';
 
 sub get {
     my $self = shift;

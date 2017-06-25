@@ -4,10 +4,10 @@ use 5.20.0;
 use warnings;
 use Moose;
 use Finance::GDAX::API::TypeConstraints;
-use Finance::GDAX::API::Request;
+use Finance::GDAX::API;
 use namespace::autoclean;
 
-extends 'Finance::GDAX::API::Request';
+extends 'Finance::GDAX::API';
 
 has 'payment_method_id' => (is  => 'rw',
 			    isa => 'Str',

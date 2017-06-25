@@ -1,4 +1,4 @@
-package Finance::GDAX::API::Request;
+package Finance::GDAX::API;
 our $VERSION = '0.01';
 use 5.20.0;
 use warnings;
@@ -134,16 +134,23 @@ sub external_secret {
     return 1;
 }
 
+sub save_secrets_to_environment {
+    my $self = shift;
+    $ENV{GDAX_API_KEY}        = $self->key;
+    $ENV{GDAX_API_SECRET}     = $self->secret;
+    $ENV{GDAX_API_PASSPHRASE} = $self->passphrase;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
 
 =head1 NAME
 
-Finance::GDAX::API::Request - Build and sign a GDAX REST request
+Finance::GDAX::API - Build and sign GDAX REST request
 
 =head1 SYNOPSIS
 
-  $req = Finance::GDAX::API::Request->new(
+  $req = Finance::GDAX::API->new(
                         key        => 'My API Key',
                         secret     => 'My API Secret Key',
                         passphrase => 'My API Passphrase');
@@ -151,11 +158,38 @@ Finance::GDAX::API::Request - Build and sign a GDAX REST request
   $req->path('accounts');
   $account_list = $req->send;
 
+  # Use the more specific classes, for example Account:
+
+  $account = Finance::GDAX::API::Account->new(
+                        key        => 'My API Key',
+                        secret     => 'My API Secret Key',
+                        passphrase => 'My API Passphrase');
+  $account_list = $account->get_all;
+  $account_info = $account->get('89we-wefjbwe-wefwe-woowi');
+
+  # If you use Environment variables to store your secrects, you can
+  # omit them in the constructors (see the Attributes below)
+
+  $order = Finance::GDAX::API::Order->new;
+  $orders = $order->list(['open','settled'], 'BTC-USD');
+
 =head1 DESCRIPTION
 
 Creates a signed GDAX REST request - you need to provide the key,
 secret and passphrase attributes, or specify that they be provided by
 the external_secret method.
+
+All Finance::GDAX::API::* modules extend this class to implement their
+particular portion of the GDAX API.
+
+This is a low-level implementation of the GDAX API and complete,
+except for supporting result paging.
+
+Return values are generally returned as references to arrays, hashes,
+arrays of hashes, hashes of arrays and all are documented within each
+method.
+
+All REST requests use https requests.
 
 =head1 ATTRIBUTES
 
@@ -242,14 +276,25 @@ credentials, you can create a small callable program that will decrypt
 them and provide them, so that they never live on disk unencrypted,
 and never show up in process listings:
 
-  my $request = Finance::GDAX::API::Request->new;
-  $request->external_secret('my_decryptor', 1);
+  my $request = Finance::GDAX::API->new;
+  $request->external_secret('/path/to/my_decryptor', 1);
 
 This would assign the key, secret and passphrase attributes for you by
 forking and running the 'my_decryptor' program. The 1 designates a
 fork, rather than a file read.
 
 This method will die easily if things aren't right.
+
+=head2 C<save_secrets_to_environment>
+
+Another convenience method that can be used to store your secrets into
+the volatile environment in which your perl is running, so that
+subsequent GDAX API object instances will not need to have the key,
+secret and passphrase set.
+
+You may not want to do this! It stores each attribute, "key", "secret"
+and "passphrase" to the environment variables "GDAX_API_KEY",
+"GDAX_API_SECRET" and "GDAX_API_PASSPHRASE", respectively.
 
 =head1 METHODS you probably don't need to worry about
 
@@ -265,8 +310,6 @@ structure referenced by the "body" attribute. You don't normally need
 to look at this.
 
 =cut
-
-
 
 =head1 AUTHOR
 

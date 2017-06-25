@@ -3,11 +3,11 @@ our $VERSION = '0.01';
 use 5.20.0;
 use warnings;
 use Moose;
-use Finance::GDAX::API::Request;
+use Finance::GDAX::API;
 use Finance::GDAX::API::TypeConstraints;
 use namespace::autoclean;
 
-extends 'Finance::GDAX::API::Request';
+extends 'Finance::GDAX::API';
 
 has 'id' => (is  => 'rw',
 	     isa => 'Str',
