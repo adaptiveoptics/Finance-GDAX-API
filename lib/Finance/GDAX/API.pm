@@ -16,15 +16,18 @@ has 'debug' => (is  => 'rw',
     );
 has 'key' => (is  => 'rw',
 	      isa => 'Str',
-	      default => $ENV{GDAX_API_KEY} || '',
+	      default => sub {$ENV{GDAX_API_KEY} || ''},
+	      lazy    => 1,
     );
 has 'secret' => (is  => 'rw',
 		 isa => 'Str',
-		 default => $ENV{GDAX_API_SECRET} || '',
+		 default => sub {$ENV{GDAX_API_SECRET} || ''},
+		 lazy    => 1,
     );
 has 'passphrase' => (is  => 'rw',
 		     isa => 'Str',
-		     default => $ENV{GDAX_API_PASSPHRASE} || '',
+		     default => sub {$ENV{GDAX_API_PASSPHRASE} || ''},
+		     lazy    => 1,
     );
 has 'method' => (is  => 'rw',
 		 isa => 'Str',

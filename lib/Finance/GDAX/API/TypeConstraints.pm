@@ -16,6 +16,11 @@ subtype 'PositiveNum',
     where { $_ > 0 },
     message { "$_ is not a positive number" };
 
+subtype 'PositiveNumOrZero',
+    as 'Num',
+    where { $_ >= 0 },
+    message { "$_ is not a positive number or zero" };
+
 subtype 'ProductLevel',
     as 'Int',
     where { $_ >= 1 and $_ <= 3 },
