@@ -15,10 +15,9 @@ OVERVIEW
 The Finance::GDAX::API modules all match up to the sections in the
 GDAX API documentation.
 
-The only exceptions are Finance::GDAX::API::Request and
-Finance::GDAX::API::URL from which all the implementation classes
-inherit. These two base modules handle the mechanics of the API
-requests.
+The only exceptions are Finance::GDAX::API (from which all the
+implementation classes inherit) and Finance::GDAX::API::UR These two
+modules handle the mechanics of the API requests.
 
 SECURITY
 ========
@@ -91,7 +90,7 @@ MORE SECURITY
 
 There is another convenience method inherited into all API modules for
 the variously paranoid called "external_secret" which is documented in
-Finance::GDAX::API::Request
+Finance::GDAX::API
 
 This method will take a file name and read it in to assigns the 3 API
 keys necessary for requests that was assigned to you by GDAX.
