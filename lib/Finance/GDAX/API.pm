@@ -253,9 +253,10 @@ Integer time in seconds to wait for response to request.
 
 =head2 C<send>
 
-Sends the signed GDAX API request, returning a hashref containing 2
-keys, "code" representing the HTTP status code, and "content"
-representing the raw content sent from the server.
+Sends the GDAX API request, returning the JSON response content as a
+perl data structure. Each Finance::GDAX::API::* class documents this
+structure (what to expect), as does the GDAX API (which will always be
+authoritative).
 
 =head2 C<external_secret> filename, fork?
 
