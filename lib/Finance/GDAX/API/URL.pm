@@ -82,6 +82,7 @@ Adds to the URL, each will be separated with a '/'
 
 sub add {
     my ($self, $thing) = @_;
+    $thing =~ s/^\/+//;
     push @{$self->_sections}, $thing;
 }
 

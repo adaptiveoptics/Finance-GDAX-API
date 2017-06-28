@@ -28,6 +28,7 @@ can_ok($account, 'holds');
      
      ok(my $response = $account->get_all, 'get_all accounts list');
      my $rc = $account->response_code;
+     warn 'ERROR: '.$account->error if $account->error;
      is($rc, 200, 'Good 200 response code from accounts list');
      is(ref($response), 'ARRAY', 'get_all accounts returned an array');
      my $found;
