@@ -1,3 +1,15 @@
+commit b0e117953acbb6a853e8c73c082a1fa5efa1bd37
+Author: Mark Rushing <mark@orbislumen.net>
+Date:   Tue Jul 4 17:13:26 2017 -0700
+
+    Fixed bug in Withdrawl class to crypto, changed test in 010-initial to not test execution of secrets pipe because BSD fails the test and also changed currency to be successful if value > 0 instead of >1 - something changed at GDAX with that.
+
+commit ffaa534ee9fe1e839555d8e6c49cae502f40f8da
+Author: Mark Rushing <mark@orbislumen.net>
+Date:   Tue Jun 27 18:42:36 2017 -0700
+
+    rebuild for new 0.02 release
+
 commit 8fd03488533958add7fb1ba534557b0c38202137
 Author: Mark Rushing <mark@orbislumen.net>
 Date:   Tue Jun 27 18:26:50 2017 -0700
