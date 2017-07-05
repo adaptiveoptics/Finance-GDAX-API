@@ -1,5 +1,5 @@
 package Finance::GDAX::API::Withdrawl;
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 use 5.20.0;
 use warnings;
 use Moose;
@@ -68,7 +68,7 @@ sub to_crypto {
     $self->method('POST');
     $self->body({ amount         => $self->amount,
 		  currency       => $self->currency,
-		  crypto_address => $self->coinbase_account_id,
+		  crypto_address => $self->crypto_address,
 		});
     return $self->send;
 }
