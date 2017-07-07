@@ -43,7 +43,6 @@ sub get {
     die 'no report_id specified to get' unless $report_id;
     $self->report_id($report_id);
     my $path = "/reports/$report_id";
-    warn $path;
     $self->path($path);
     $self->method('GET');
     return $self->send;
