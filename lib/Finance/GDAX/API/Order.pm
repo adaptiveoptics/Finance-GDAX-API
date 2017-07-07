@@ -167,7 +167,7 @@ Finance::GDAX::API::Order - Perl interface to the GDAX Order API
   $order->product_id('BTC-USD');
   $order->funds(500.00);
   $response = $order->initiate;
-  if ($response->error) { die "Error: ".$response->error };
+  if ($order->error) { die "Error: ".$order->error };
   
 
 =head1 DESCRIPTION
