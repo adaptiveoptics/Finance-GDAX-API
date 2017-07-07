@@ -1,5 +1,5 @@
 package Finance::GDAX::API::Order;
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 use 5.20.0;
 use warnings;
 use Moose;
