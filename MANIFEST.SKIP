@@ -12,3 +12,4 @@ bitcoin-cli.txt
 ^#.*#$
 ^\.#
 pm_to_blib
+^MYMETA.*
